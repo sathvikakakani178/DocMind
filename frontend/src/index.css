@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: #F8FAFC; color: #0F172A; -webkit-font-smoothing: antialiased; }
+::selection { background: #2563EB; color: white; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+.card { @apply bg-white rounded-2xl border border-slate-200 shadow-sm; }
+.btn-primary { @apply bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-all flex items-center gap-2 text-sm; }
+.btn-outline { @apply border border-slate-200 text-slate-700 font-medium px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2 text-sm; }
+
+/* Chat bubble styles */
+.chat-user { @apply bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed max-w-[80%] ml-auto; }
+.chat-ai { @apply bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed max-w-[85%] shadow-sm; }
+
+/* Markdown in chat */
+.chat-ai p { @apply mb-2 last:mb-0; }
+.chat-ai ul { @apply list-disc list-inside mb-2 space-y-1; }
+.chat-ai ol { @apply list-decimal list-inside mb-2 space-y-1; }
+.chat-ai strong { @apply font-semibold text-slate-900; }
+.chat-ai code { @apply bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono; }
+.chat-ai h1, .chat-ai h2, .chat-ai h3 { @apply font-semibold text-slate-900 mb-2; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes typing { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-6px); } }
+
+.animate-fadeUp { animation: fadeUp 0.5s ease forwards; }
+.animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
+.typing-dot { animation: typing 1.2s ease-in-out infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.2s; opacity: 0; }
+.delay-3 { animation-delay: 0.3s; opacity: 0; }
