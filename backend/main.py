@@ -5,8 +5,6 @@ from typing import Optional
 import uvicorn
 import os
 
-from rag_engine import RAGEngine
-
 app = FastAPI(title="RAG Document Analyzer API", version="1.0.0")
 
 app.add_middleware(
@@ -16,7 +14,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-rag = RAGEngine()
+# ── Lazy load RAG engine ──────────────────────────────────────────────────────
+_rag = None
+
+def get_rag():
+    global _rag
+    if _rag is None:
+        from rag_engine import RAGEngine
+        _rag = RAGEngine()
+    return _rag
 
 # ── Models ────────────────────────────────────────────────────────────────────
 
@@ -36,45 +42,39 @@ def root():
 
 @app.get("/health")
 def health():
+    # Return healthy immediately without loading the model
     return {"status": "healthy", "groq_configured": bool(os.getenv("GROQ_API_KEY"))}
 
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
-    """Upload and process a PDF document."""
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
-
     contents = await file.read()
     if len(contents) > 50 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large. Maximum size is 50MB.")
-
-    result = rag.process_document(contents, file.filename)
+    result = get_rag().process_document(contents, file.filename)
     return result
 
 @app.post("/ask")
 def ask_question(req: QuestionRequest):
-    """Ask a question about a processed document."""
-    result = rag.answer_question(req.document_id, req.question, req.chat_history)
+    result = get_rag().answer_question(req.document_id, req.question, req.chat_history)
     return result
 
 @app.post("/summarize")
 def summarize(req: SummarizeRequest):
-    """Generate a summary of a processed document."""
-    result = rag.summarize_document(req.document_id)
+    result = get_rag().summarize_document(req.document_id)
     return result
 
 @app.get("/documents/{document_id}")
 def get_document(document_id: str):
-    """Get document metadata."""
-    doc = rag.get_document(document_id)
+    doc = get_rag().get_document(document_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found.")
     return doc
 
 @app.delete("/documents/{document_id}")
 def delete_document(document_id: str):
-    """Delete a document and its vector store."""
-    rag.delete_document(document_id)
+    get_rag().delete_document(document_id)
     return {"message": "Document deleted successfully."}
 
 if __name__ == "__main__":
